@@ -4,20 +4,18 @@ import { getInventoryController } from "./controllers/empireController";
 import { initEmpireSocket } from "./sockets/empireSocket";
 import { askPrice, getErrorMessage, log } from "./utils/ultis";
 import { loginSteamController } from "./controllers/steamController";
-import { Empire } from "./class/Empire";
-
-export const empireSellQueue = new Empire();
+import { empire } from "./lib/empireApi";
 
 const runBot = async () => {
   try {
     initEmpireSocket();
     await loginSteamController();
-    await empireSellQueue.recoverActiveTradeWhenStart();
-    await empireSellQueue.checkSteamTokenExpiration();
+    await empire.recoverActiveTradeWhenStart();
+    await empire.checkSteamTokenExpiration();
 
     const price = await askPrice();
     const items = await getInventoryController();
-    empireSellQueue.addAll(
+    empire.addAll(
       items.map((i) => ({
         itemId: i.id,
         itemName: i.market_name,
@@ -25,7 +23,7 @@ const runBot = async () => {
       })),
     );
   } catch (err) {
-    if (empireSellQueue.isProcessing) {
+    if (empire.isProcessing) {
       log("Is processing, not throw");
       return;
     }

@@ -1,4 +1,7 @@
 import axios from "axios";
+import { Empire } from "../class/Empire";
+
+export const empire = new Empire();
 
 export const empireApi = axios.create({
   baseURL: `https://${process.env.EMPIRE_BASE_URL}/api/v2`,

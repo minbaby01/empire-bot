@@ -55,7 +55,7 @@ export class Empire {
   private async processNext() {
     if (this.isProcessing) return;
     if (!this.queue.length) {
-      log("End queue");
+      log("Out of stock");
       process.exit(1);
     }
 
@@ -121,17 +121,20 @@ export class Empire {
         case 3:
           log("EMPIRE: Sending...");
 
-          const now = Date.now();
-          const updatedAtDate = parseUtc(updated_at);
-          const isLate = now - updatedAtDate.getTime() > ONE_HOUR;
+          let message = "";
+          if (updated_at) {
+            const now = Date.now();
+            const updatedAtDate = parseUtc(updated_at);
+            const isLate = now - updatedAtDate.getTime() > ONE_HOUR;
 
-          const steamName = metadata?.partner?.steam_name;
+            const steamName = metadata?.partner?.steam_name;
 
-          const greeting = isLate ? "Sorry" : "Hello";
-          const apology = isLate ? "my bot was crashed, " : "";
-          const name = steamName ? ` ${steamName},` : ",";
+            const greeting = isLate ? "Sorry" : "Hello";
+            const apology = isLate ? "my bot was crashed, " : "";
+            const name = steamName ? ` ${steamName},` : ",";
 
-          const message = `${greeting}${name} ${apology}remember to confirm when you receive the item`;
+            message = `${greeting}${name} ${apology}remember to confirm when you receive the item`;
+          }
 
           try {
             await createTradeOfferController({
@@ -253,7 +256,6 @@ export class Empire {
 
     let isExpired = expiresAt.getTime() - Date.now() <= 0 ? true : false;
     if (!isExpired) {
-      log(`Expire at: ${expiresAt}`);
       return;
     }
     this.updateSteamTokenToEmpire();

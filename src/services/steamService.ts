@@ -16,7 +16,7 @@ import {
   RELOGIN_TIMEOUT,
 } from "../constant/constant";
 import { clearCookies, setCookies } from "../storage/steamCookies";
-import { empireSellQueue } from "../bot";
+import { empire } from "../lib/empireApi";
 
 const MADATA = process.env.MADATA;
 const MADATA_PARSE: MaData = JSON.parse(MADATA!);
@@ -145,7 +145,7 @@ export const initSteamEventListener = () => {
       await new Promise<void>((resolve) => {
         client.webLogOn();
         client.once("webSession", () => {
-          empireSellQueue.updateSteamTokenToEmpire();
+          empire.updateSteamTokenToEmpire();
           resolve();
         });
         setTimeout(resolve, RELOGIN_TIMEOUT);

@@ -72,8 +72,6 @@ export const getInventoryController = async () => {
       .filter((item) => item.market_name === process.env.ITEM_NAME)
       .filter((item) => !depositedItemIds.includes(item.id));
 
-    if (!items.length) throw new Error("Out of stock");
-
     return items;
   } catch (error) {
     throw error;

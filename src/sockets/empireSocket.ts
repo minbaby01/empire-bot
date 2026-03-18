@@ -2,8 +2,7 @@ import { io } from "socket.io-client";
 import { log } from "../utils/ultis";
 import { client } from "../lib/steamApi";
 import SteamUser from "steam-user";
-import { empireApi } from "../lib/empireApi";
-import { empireSellQueue } from "../bot";
+import { empire, empireApi } from "../lib/empireApi";
 
 const domain = process.env.EMPIRE_BASE_URL;
 const socketEndpoint = `wss://trade.${domain}/trade`;
@@ -68,7 +67,7 @@ export const initEmpireSocket = async () => {
                 price_max: 9999999,
               });
 
-              empireSellQueue.handleMissingEvent();
+              empire.handleMissingEvent();
               client.setPersona(SteamUser.EPersonaState.Online);
               resolve(socket);
             } else {
@@ -85,7 +84,7 @@ export const initEmpireSocket = async () => {
         });
 
         socket.on("trade_status", (data) => {
-          empireSellQueue.handleTradeStatus(data);
+          empire.handleTradeStatus(data);
         });
 
         socket.on("disconnect", (error) => {
