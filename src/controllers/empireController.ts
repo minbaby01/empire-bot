@@ -114,12 +114,12 @@ export const getTradeController = async ({
 };
 
 export const getStatusController = async () => {
-  log("Get status");
+  log("Get status...");
 
   try {
     const { data } = await getStatusService();
     if (!data) {
-      throw new Error("Get status service error");
+      throw new Error("Get status error");
     }
     log(`Access token expire at: ${new Date(data.access_token_expires_at)}`);
     return data;

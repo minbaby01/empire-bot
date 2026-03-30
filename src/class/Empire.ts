@@ -35,8 +35,8 @@ type DepositItem = {
 };
 
 export class Empire {
-  private queue: QueueItem[] = [];
   public isProcessing: boolean = false;
+  private queue: QueueItem[] = [];
   private depositItem: DepositItem = {
     depositId: null,
     itemId: null,
@@ -54,6 +54,7 @@ export class Empire {
 
   private async processNext() {
     if (this.isProcessing) return;
+
     if (!this.queue.length) {
       log("Out of stock");
       process.exit(1);
@@ -230,6 +231,13 @@ export class Empire {
           continue;
         }
 
+        this.isProcessing = true;
+        this.depositItem = {
+          depositId: id,
+          itemId: item.id,
+          itemName: item.market_name,
+        };
+
         this.handleTradeStatus([
           {
             data: {
@@ -250,15 +258,22 @@ export class Empire {
   }
 
   async checkSteamTokenExpiration() {
-    const { access_token_expires_at } = await getStatusController();
+    try {
+      const { access_token_expires_at } = await getStatusController();
 
-    const expiresAt = new Date(access_token_expires_at);
+      const expiresAt = new Date(access_token_expires_at);
 
-    let isExpired = expiresAt.getTime() - Date.now() <= 0 ? true : false;
-    if (!isExpired) {
-      return;
+      let isExpired = expiresAt.getTime() - Date.now() <= 0 ? true : false;
+      if (!isExpired) {
+        return;
+      }
+
+      log("Steam access token has expired, updating...");
+
+      this.updateSteamTokenToEmpire();
+    } catch (error) {
+      log(error);
     }
-    this.updateSteamTokenToEmpire();
   }
 
   public async updateSteamTokenToEmpire() {
@@ -283,7 +298,7 @@ export class Empire {
 
       const decode = decodeJwt({ accessToken: data.webapi_token });
       if (decode.exp) {
-        log(`Next schedule update at: ${new Date(decode.exp)}`);
+        log(`Next schedule update at: ${new Date(decode.exp * 1000)}`);
       }
     } catch (err) {
       log(err);

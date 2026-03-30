@@ -114,7 +114,7 @@ export const initSteamEventListener = () => {
     client.setPersona(SteamUser.EPersonaState.Online);
   });
 
-  client.on("webSession", async (sessionid, cookies) => {
+  client.on("webSession", (sessionid, cookies) => {
     log("Got web session");
     setCookies(cookies);
     community.setCookies(cookies);
@@ -143,9 +143,11 @@ export const initSteamEventListener = () => {
       }
 
       await new Promise<void>((resolve) => {
+        log("webLogOn...");
         client.webLogOn();
-        client.once("webSession", () => {
-          empire.updateSteamTokenToEmpire();
+        client.once("webSession", async () => {
+          log("Callback update token...");
+          await empire.updateSteamTokenToEmpire();
           resolve();
         });
         setTimeout(resolve, RELOGIN_TIMEOUT);
