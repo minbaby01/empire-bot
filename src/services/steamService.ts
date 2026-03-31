@@ -114,7 +114,7 @@ export const initSteamEventListener = () => {
     client.setPersona(SteamUser.EPersonaState.Online);
   });
 
-  client.on("webSession", (sessionid, cookies) => {
+  client.on("webSession", async (sessionid, cookies) => {
     log("Got web session");
     setCookies(cookies);
     community.setCookies(cookies);
@@ -125,6 +125,7 @@ export const initSteamEventListener = () => {
         log("Trade manager ready");
       }
     });
+    await empire.updateSteamTokenToEmpire();
   });
 
   let isRelogin = false;
@@ -142,16 +143,18 @@ export const initSteamEventListener = () => {
         return;
       }
 
-      await new Promise<void>((resolve) => {
-        log("webLogOn...");
-        client.webLogOn();
-        client.once("webSession", async () => {
-          log("Callback update token...");
-          await empire.updateSteamTokenToEmpire();
-          resolve();
-        });
-        setTimeout(resolve, RELOGIN_TIMEOUT);
-      });
+      client.webLogOn();
+
+      // await new Promise<void>((resolve) => {
+      //   log("webLogOn...");
+      //   // client.webLogOn();
+      //   // client.once("webSession", async () => {
+      //   //   log("Callback update token...");
+      //   //   await empire.updateSteamTokenToEmpire();
+      //   //   resolve();
+      //   // });
+      //   // setTimeout(resolve, RELOGIN_TIMEOUT);
+      // });
 
       await delay(RELOGIN_DELAY);
     } catch (error) {

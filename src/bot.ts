@@ -11,7 +11,6 @@ const runBot = async () => {
     initEmpireSocket();
     await loginSteamController();
     await empire.recoverActiveTradeWhenStart();
-    await empire.checkSteamTokenExpiration();
 
     const price = await askPrice();
     const items = await getInventoryController();

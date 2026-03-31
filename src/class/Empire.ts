@@ -257,27 +257,16 @@ export class Empire {
     }
   }
 
-  async checkSteamTokenExpiration() {
+  public async updateSteamTokenToEmpire() {
     try {
       const { access_token_expires_at } = await getStatusController();
 
       const expiresAt = new Date(access_token_expires_at);
 
       let isExpired = expiresAt.getTime() - Date.now() <= 0 ? true : false;
-      if (!isExpired) {
-        return;
-      }
+      if (!isExpired) return;
 
       log("Steam access token has expired, updating...");
-
-      this.updateSteamTokenToEmpire();
-    } catch (error) {
-      log(error);
-    }
-  }
-
-  public async updateSteamTokenToEmpire() {
-    try {
       const cookies = this.cookies;
 
       if (!cookies || !cookies.length) {
