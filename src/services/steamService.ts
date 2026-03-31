@@ -145,17 +145,6 @@ export const initSteamEventListener = () => {
 
       client.webLogOn();
 
-      // await new Promise<void>((resolve) => {
-      //   log("webLogOn...");
-      //   // client.webLogOn();
-      //   // client.once("webSession", async () => {
-      //   //   log("Callback update token...");
-      //   //   await empire.updateSteamTokenToEmpire();
-      //   //   resolve();
-      //   // });
-      //   // setTimeout(resolve, RELOGIN_TIMEOUT);
-      // });
-
       await delay(RELOGIN_DELAY);
     } catch (error) {
       log(error);
