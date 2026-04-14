@@ -1,31 +1,31 @@
 import { jwtDecode } from "jwt-decode";
-import prompts from "prompts";
+// import prompts from "prompts";
 
 export const delay = (ms: number): Promise<void> =>
   new Promise((res) => setTimeout(res, ms));
 
-export const askPrice = async () => {
-  const response = await prompts({
-    type: "text",
-    name: "price",
-    message: "Input price:",
-    validate: (value) => {
-      const trimmed = value.trim();
-      const price = parseFloat(trimmed);
-      const isValidNumber = /^[0-9]+(\.[0-9]+)?$/.test(trimmed);
-      if (!trimmed || isNaN(price) || price <= 0 || !isValidNumber) {
-        return "Invalid price";
-      }
-      return true;
-    },
-  });
+// export const askPrice = async () => {
+//   const response = await prompts({
+//     type: "text",
+//     name: "price",
+//     message: "Input price:",
+//     validate: (value) => {
+//       const trimmed = value.trim();
+//       const price = parseFloat(trimmed);
+//       const isValidNumber = /^[0-9]+(\.[0-9]+)?$/.test(trimmed);
+//       if (!trimmed || isNaN(price) || price <= 0 || !isValidNumber) {
+//         return "Invalid price";
+//       }
+//       return true;
+//     },
+//   });
 
-  if (!response.price) {
-    throw new Error("Input cancelled by user (Ctrl+C).");
-  }
+//   if (!response.price) {
+//     throw new Error("Input cancelled by user (Ctrl+C).");
+//   }
 
-  return response.price;
-};
+//   return response.price;
+// };
 
 export const log = (...args: any) => {
   const now = new Date().toLocaleTimeString("en-GB");
@@ -49,7 +49,7 @@ export const sendTelegramMessage = async (text: string) => {
   const adminId = process.env.TELE_ID;
   const telegramToken = process.env.TELE_BOT_TOKEN;
   if (!adminId || telegramToken) {
-    log("Can not send");
+    log("Cannot send");
     return;
   }
 

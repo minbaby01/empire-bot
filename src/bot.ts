@@ -2,9 +2,10 @@ import "dotenv/config";
 
 import { getInventoryController } from "./controllers/empireController";
 import { initEmpireSocket } from "./sockets/empireSocket";
-import { askPrice, getErrorMessage, log } from "./utils/ultis";
+import { getErrorMessage, log, sendTelegramMessage } from "./utils/ultis";
 import { loginSteamController } from "./controllers/steamController";
 import { empire } from "./lib/empireApi";
+import { getItemPrice } from "./utils/itemPriceUtils";
 
 const runBot = async () => {
   try {
@@ -12,14 +13,19 @@ const runBot = async () => {
     await loginSteamController();
     await empire.recoverActiveTradeWhenStart();
 
-    const price = await askPrice();
+    const prices = getItemPrice();
     const items = await getInventoryController();
+
     empire.addAll(
-      items.map((i) => ({
-        itemId: i.id,
-        itemName: i.market_name,
-        price,
-      })),
+      items.map((i) => {
+        const price = prices[i.market_name];
+
+        return {
+          itemId: i.id,
+          itemName: i.market_name,
+          price: price,
+        };
+      }),
     );
   } catch (err) {
     if (empire.isProcessing) {
@@ -28,6 +34,7 @@ const runBot = async () => {
     }
 
     getErrorMessage(err);
+    await sendTelegramMessage(String(err));
   }
 };
 
